@@ -1,7 +1,8 @@
 A Vietnamese TTS
 ================
+This repo is based on: https://github.com/NTT123/vietTTS
 
-Tacotron + HiFiGAN vocoder for vietnamese datasets.
+I replace HifiGAN vocoder by UnivNet vocoder and keep Tacotron2 for vietnamese datasets. I also deploy simple API using FastAPI in main.
 
 A synthesized audio clip: [clip.wav](assets/infore/clip.wav). A colab notebook: [notebook](https://colab.research.google.com/drive/1oczrWOQOr1Y_qLdgis1twSlNZlfPVXoY?usp=sharing).
 
@@ -64,64 +65,13 @@ python3 -m vietTTS.nat.acoustic_trainer
 
 
 
-Train HiFiGAN vocoder
+Train UnivNet vocoder
 -------------
 
-HiFiGAN vocoder được implement từ đây https://github.com/jik876/hifi-gan. sử dụng config file at `assets/hifigan/config.json` để train model
+HiFiGAN vocoder implement from  https://github.com/mindslab-ai/univnet . Read their README to train vocoder
 
 ```sh
-git clone https://github.com/jik876/hifi-gan.git
-
-# create dataset in hifi-gan format
-ln -sf `pwd`/train_data hifi-gan/data
-cd hifi-gan/data
-ls -1 *.TextGrid | sed -e 's/\.TextGrid$//' > files.txt
-cd ..
-head -n 100 data/files.txt > val_files.txt
-tail -n +101 data/files.txt > train_files.txt
-rm data/files.txt
-
-# training
-python3 train.py \
-  --config ../assets/hifigan/config.json \
-  --input_wavs_dir=data \
-  --input_training_file=train_files.txt \
-  --input_validation_file=val_files.txt
-```
-
-Finetune on Ground-Truth Aligned melspectrograms:
-```sh
-cd /path/to/vietTTS # go to vietTTS directory
-python3 -m vietTTS.nat.zero_silence_segments -o train_data # zero all [sil, sp, spn] segments
-python3 -m vietTTS.nat.gta -o /path/to/hifi-gan/ft_dataset  # create gta melspectrograms at hifi-gan/ft_dataset directory
-
-# turn on finetune
-cd /path/to/hifi-gan
-python3 train.py \
-  --fine_tuning True \
-  --config ../assets/hifigan/config.json \
-  --input_wavs_dir=data \
-  --input_training_file=train_files.txt \
-  --input_validation_file=val_files.txt
-```
-
-Convert pytorch model to haiku format:
-```sh
-cd ..
-python3 -m vietTTS.hifigan.convert_torch_model_to_haiku \
-  --config-file=assets/hifigan/config.json \
-  --checkpoint-file=hifi-gan/cp_hifigan/g_[latest_checkpoint]
-```
-
-Synthesize speech
------------------
-
-```sh
-python3 -m vietTTS.synthesizer \
-  --lexicon-file=train_data/lexicon.txt \
-  --text="hôm qua em tới trường" \
-  --output=clip.wav
-```
+git clone https://github.com/mindslab-ai/univnet
 
 ├── assets                                #Nơi chứa các file weight 
 │   ├── hifigan
