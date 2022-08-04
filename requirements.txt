@@ -1,0 +1,12 @@
+fastapi[all]
+torch
+matplotlib
+pydub
+librosa
+matplotlib
+numpy
+scipy
+torch
+tensorboard
+tqdm
+omegaconf

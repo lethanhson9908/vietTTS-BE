@@ -1,0 +1,10 @@
+dm-haiku@ git+https://github.com/deepmind/dm-haiku
+einops
+gdown
+jax
+jaxlib
+librosa
+optax
+tabulate
+textgrid
+tqdm
